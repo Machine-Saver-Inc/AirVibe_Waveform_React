@@ -1,6 +1,7 @@
 // src/App.jsx
 import { useEffect, useState } from "react";
 import WaveformGrid from "./components/WaveformGrid.jsx";
+import MetaPanel from "./components/MetaPanel.jsx";
 import { gridFromMessage } from "./store/grid.js";
 import { fetchMessage } from "./lib/api.js";
 import "./index.css";
@@ -20,6 +21,7 @@ export default function App() {
   const built = import.meta.env.VITE_BUILD_TIME || "local";
 
   const [file, setFile] = useState("waveform-demo.json");
+  const [msg, setMsg] = useState(null);
   const [grid, setGrid] = useState({ total: 0, received: [], late: [], requested: [] });
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -28,10 +30,12 @@ export default function App() {
     try {
       setLoading(true);
       setErr("");
-      const msg = await fetchMessage(name);
-      setGrid(gridFromMessage(msg));
+      const m = await fetchMessage(name);
+      setMsg(m);
+      setGrid(gridFromMessage(m));
     } catch (e) {
       setErr(String(e));
+      setMsg(null);
       setGrid({ total: 0, received: [], late: [], requested: [] });
     } finally {
       setLoading(false);
@@ -65,10 +69,15 @@ export default function App() {
         </div>
       </header>
 
+      {/* NEW: Metadata card */}
       <section className="card">
+        {!loading && !err && <MetaPanel msg={msg} stats={s} />}
         {loading && <p>Loading…</p>}
         {err && <p style={{ color: "var(--danger)" }}>Error: {err}</p>}
+      </section>
 
+      {/* Stats + progress */}
+      <section className="card">
         {!loading && !err && s.total > 0 && (
           <div className="stats">
             <div>
@@ -81,8 +90,11 @@ export default function App() {
             </div>
           </div>
         )}
+        {loading && <p>Loading…</p>}
+        {err && <p style={{ color: "var(--danger)" }}>Error: {err}</p>}
       </section>
 
+      {/* Grid */}
       <section className="card" style={{ display: "grid", placeItems: "center" }}>
         {!loading && !err && grid.total > 0 && <WaveformGrid {...grid} />}
       </section>
