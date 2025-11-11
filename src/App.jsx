@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import WaveformGrid from "./components/WaveformGrid.jsx";
 import { gridFromMessage } from "./store/grid.js";
+import { fetchMessage } from "./lib/api.js";
 
 export default function App() {
   const ver = import.meta.env.VITE_APP_VERSION || "dev";
@@ -16,9 +17,7 @@ export default function App() {
     try {
       setLoading(true);
       setErr("");
-      const res = await fetch(`/${name}`, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const msg = await res.json();
+      const msg = await fetchMessage(name);
       setGrid(gridFromMessage(msg));
     } catch (e) {
       setErr(String(e));

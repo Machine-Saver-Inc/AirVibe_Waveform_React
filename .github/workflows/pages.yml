@@ -34,6 +34,7 @@ jobs:
         run: |
           export VITE_APP_VERSION=$(git rev-parse --short HEAD)
           export VITE_BUILD_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          export VITE_API_BASE=""   # later: set to https://your-api/ if needed
           npm run build
 
       - name: Setup Pages
