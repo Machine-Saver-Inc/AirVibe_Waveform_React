@@ -12,69 +12,31 @@ export default function WaveformGrid({
   const cols = Math.ceil(Math.sqrt(total));
   const items = Array.from({ length: total }, (_, i) => i);
 
-  const dot = (i) => {
-    let color = "#999";     // pending
-    let label = "pending";
-    if (R.has(i)) { color = "#00a35a"; label = "received"; }
-    if (L.has(i)) { color = "#e23b3b"; label = "late/missing"; }   // overrides received
-    if (Q.has(i)) { color = "#e0a800"; label = "requested"; }      // highest priority
-    return { color, label };
+  const stateFor = (i) => {
+    if (Q.has(i)) return "requested";
+    if (L.has(i)) return "late";
+    if (R.has(i)) return "received";
+    return "pending";
   };
 
   return (
-    <div style={{ display: "grid", gap: 8 }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${cols}, 40px)`,
-          gap: 8,
-          justifyContent: "center",
-        }}
-      >
-        {items.map((i) => {
-          const { color, label } = dot(i);
-          return (
-            <div
-              key={i}
-              title={`${i} • ${label}`}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                border: `3px solid ${color}`,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "0.8rem",
-                userSelect: "none",
-              }}
-            >
-              {i}
-            </div>
-          );
-        })}
-      </div>
+    <div className="wave-grid" style={{ gridTemplateColumns: `repeat(${cols}, 44px)` }}>
+      {items.map((i) => (
+        <div
+          key={i}
+          className="dot"
+          data-state={stateFor(i)}
+          title={`${i} • ${stateFor(i)}`}
+        >
+          {i}
+        </div>
+      ))}
 
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", opacity: 0.8 }}>
-        {[
-          ["#00a35a", "received"],
-          ["#e23b3b", "late/missing"],
-          ["#e0a800", "requested"],
-          ["#999", "pending"],
-        ].map(([c, t]) => (
-          <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: "50%",
-                border: `3px solid ${c}`,
-                display: "inline-block",
-              }}
-              aria-hidden
-            />
-            {t}
-          </span>
-        ))}
+      <div className="legend" style={{ gridColumn: `1 / -1`, marginTop: 6 }}>
+        <span><i className="swatch received" /> received</span>
+        <span><i className="swatch late" /> late/missing</span>
+        <span><i className="swatch requested" /> requested</span>
+        <span><i className="swatch pending" /> pending</span>
       </div>
     </div>
   );

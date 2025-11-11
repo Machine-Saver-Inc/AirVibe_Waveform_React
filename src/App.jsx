@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import WaveformGrid from "./components/WaveformGrid.jsx";
 import { gridFromMessage } from "./store/grid.js";
 import { fetchMessage } from "./lib/api.js";
+import "./index.css";
 
 function computeStats(grid) {
   const total = Number(grid.total || 0);
@@ -42,63 +43,53 @@ export default function App() {
   const s = computeStats(grid);
 
   return (
-    <main style={{minHeight:"100vh",display:"grid",placeItems:"center",fontFamily:"system-ui, sans-serif"}}>
-      <div style={{textAlign:"center", display:"grid", gap:16, padding:"16px"}}>
-        <h1 style={{fontSize:"3rem", marginBottom:"0.25rem"}}>AirVibe Waveform</h1>
-        <p style={{opacity:0.8}}>GitHub Actions → GitHub Pages ✅</p>
-
-        <div style={{display:"flex", gap:8, justifyContent:"center", alignItems:"center"}}>
-          <label htmlFor="msg" style={{opacity:0.8}}>Message:</label>
+    <div className="container">
+      <header className="header">
+        <div>
+          <h1 className="h1">AirVibe Waveform</h1>
+          <div className="muted">GitHub Actions → GitHub Pages</div>
+        </div>
+        <div className="row">
+          <label htmlFor="msg" className="muted">Message</label>
           <select
             id="msg"
+            className="select"
             value={file}
             onChange={(e) => setFile(e.target.value)}
-            style={{padding:"0.4rem 0.6rem", borderRadius:8, border:"1px solid #444"}}
           >
             <option value="waveform-demo.json">waveform-demo.json</option>
             <option value="waveform-demo-2.json">waveform-demo-2.json</option>
             <option value="waveform-demo-3.json">waveform-demo-3.json</option>
           </select>
-          <button
-            onClick={() => load(file)}
-            style={{padding:"0.5rem 1rem", borderRadius:12, border:"1px solid #444", cursor:"pointer"}}
-          >
-            Reload
-          </button>
+          <button className="btn" onClick={() => load(file)}>Reload</button>
         </div>
+      </header>
 
-        {/* Stats row */}
+      <section className="card">
+        {loading && <p>Loading…</p>}
+        {err && <p style={{ color: "var(--danger)" }}>Error: {err}</p>}
+
         {!loading && !err && s.total > 0 && (
-          <div style={{display:"grid", gap:8, justifyItems:"center"}}>
+          <div className="stats">
             <div>
               <strong>{s.pct}%</strong> complete • received {s.receivedCount}/{s.total}
               {" • "}missing {s.missingCount}
               {" • "}requested {s.requestedCount}
             </div>
-            <div style={{
-              width: "min(560px, 90vw)",
-              border: "1px solid #444",
-              borderRadius: 8,
-              overflow: "hidden",
-              height: 12
-            }}>
-              <div style={{
-                width: `${s.pct}%`,
-                height: "100%",
-                background: "#00a35a"
-              }} />
+            <div className="progress">
+              <div className="bar" style={{ width: `${s.pct}%` }} />
             </div>
           </div>
         )}
+      </section>
 
-        {loading && <p>Loading…</p>}
-        {err && <p style={{color:"#e23b3b"}}>Error: {err}</p>}
+      <section className="card" style={{ display: "grid", placeItems: "center" }}>
         {!loading && !err && grid.total > 0 && <WaveformGrid {...grid} />}
+      </section>
 
-        <div style={{marginTop:"0.5rem", opacity:0.7, fontSize:"0.9rem"}}>
-          build <code>{ver}</code> • <code>{built}</code> UTC
-        </div>
-      </div>
-    </main>
+      <footer className="muted" style={{ textAlign: "center", padding: "8px 0 20px" }}>
+        build <code>{ver}</code> • <code>{built}</code> UTC
+      </footer>
+    </div>
   );
 }
