@@ -102,3 +102,24 @@ body{
 .legend .swatch.late{border-color:var(--danger)}
 .legend .swatch.requested{border-color:var(--warn)}
 .legend .swatch.pending{border-color:#999}
+
+/* plots */
+.plots{
+  display:grid;
+  gap:12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.subcard{
+  background:#141821;
+  border:1px solid var(--ring);
+  border-radius:var(--br);
+  padding:var(--pad);
+}
+.plot-title{ font-size:1rem; }
+svg.wave{
+  width:100%;
+  height:160px;
+  background:#0e1118;
+  border-radius:10px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03);
+}

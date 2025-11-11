@@ -1,6 +1,7 @@
 // src/App.jsx
 import { useEffect, useState } from "react";
 import WaveformGrid from "./components/WaveformGrid.jsx";
+import WaveformPlot from "./components/WaveformPlot.jsx";
 import MetaPanel from "./components/MetaPanel.jsx";
 import { gridFromMessage } from "./store/grid.js";
 import { fetchMessage } from "./lib/api.js";
@@ -64,6 +65,7 @@ export default function App() {
             <option value="waveform-demo.json">waveform-demo.json</option>
             <option value="waveform-demo-2.json">waveform-demo-2.json</option>
             <option value="waveform-demo-3.json">waveform-demo-3.json</option>
+            <option value="waveform-demo-samples.json">waveform-demo-samples.json</option>
           </select>
           <button className="btn" onClick={() => load(file)}>Reload</button>
         </div>
@@ -97,6 +99,29 @@ export default function App() {
       {/* Grid */}
       <section className="card" style={{ display: "grid", placeItems: "center" }}>
         {!loading && !err && grid.total > 0 && <WaveformGrid {...grid} />}
+      </section>
+
+      {/* Waveform plots (optional) */}
+      <section className="card">
+        {!loading && !err && (
+          (() => {
+            const ax1 = msg?.samplesAX1 || [];
+            const ax2 = msg?.samplesAX2 || [];
+            const ax3 = msg?.samplesAX3 || [];
+            const any = (ax1.length + ax2.length + ax3.length) > 0;
+            return any ? (
+              <div className="plots">
+                {ax1.length > 0 && <WaveformPlot title="Axis 1" samples={ax1} />}
+                {ax2.length > 0 && <WaveformPlot title="Axis 2" samples={ax2} />}
+                {ax3.length > 0 && <WaveformPlot title="Axis 3" samples={ax3} />}
+              </div>
+            ) : (
+              <p className="muted">No sample arrays present in this message.</p>
+            );
+          })()
+        )}
+        {loading && <p>Loading…</p>}
+        {err && <p style={{ color: "var(--danger)" }}>Error: {err}</p>}
       </section>
 
       <footer className="muted" style={{ textAlign: "center", padding: "8px 0 20px" }}>
