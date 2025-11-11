@@ -3,6 +3,8 @@ import { useState } from "react";
 
 export default function App() {
   const [count, setCount] = useState(0);
+  const ver = import.meta.env.VITE_APP_VERSION || "dev";
+  const built = import.meta.env.VITE_BUILD_TIME || "local";
 
   return (
     <main style={{minHeight:"100vh",display:"grid",placeItems:"center",fontFamily:"system-ui, sans-serif"}}>
@@ -16,6 +18,10 @@ export default function App() {
         >
           Demo button (count = {count})
         </button>
+
+        <div style={{marginTop:"1.25rem", opacity:0.7, fontSize:"0.9rem"}}>
+          build <code>{ver}</code> • <code>{built}</code> UTC
+        </div>
       </div>
     </main>
   );

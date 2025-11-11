@@ -31,7 +31,10 @@ jobs:
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
       - name: Build (Vite)
-        run: npm run build
+        run: |
+          export VITE_APP_VERSION=$(git rev-parse --short HEAD)
+          export VITE_BUILD_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
