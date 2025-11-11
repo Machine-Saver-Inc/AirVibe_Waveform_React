@@ -1,0 +1,7 @@
+{
+  "transactionId": 42,
+  "totalSegments": 36,
+  "receivedSegments": [0,1,2,3,4,7,9,12,18,19,20,22,23,24,25,30,31,32,33],
+  "lateSegments": [5,6,10,11,21],
+  "requestedSegments": [5,6,10]
+}
