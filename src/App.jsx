@@ -4,6 +4,16 @@ import WaveformGrid from "./components/WaveformGrid.jsx";
 import { gridFromMessage } from "./store/grid.js";
 import { fetchMessage } from "./lib/api.js";
 
+function computeStats(grid) {
+  const total = Number(grid.total || 0);
+  const R = new Set(grid.received || []);
+  const receivedCount = R.size;
+  const missingCount = total > 0 ? total - receivedCount : 0;
+  const requestedCount = (grid.requested || []).length;
+  const pct = total > 0 ? Math.round((receivedCount / total) * 100) : 0;
+  return { total, receivedCount, missingCount, requestedCount, pct };
+}
+
 export default function App() {
   const ver = import.meta.env.VITE_APP_VERSION || "dev";
   const built = import.meta.env.VITE_BUILD_TIME || "local";
@@ -28,6 +38,8 @@ export default function App() {
   }
 
   useEffect(() => { load(file); }, [file]);
+
+  const s = computeStats(grid);
 
   return (
     <main style={{minHeight:"100vh",display:"grid",placeItems:"center",fontFamily:"system-ui, sans-serif"}}>
@@ -54,6 +66,30 @@ export default function App() {
             Reload
           </button>
         </div>
+
+        {/* Stats row */}
+        {!loading && !err && s.total > 0 && (
+          <div style={{display:"grid", gap:8, justifyItems:"center"}}>
+            <div>
+              <strong>{s.pct}%</strong> complete • received {s.receivedCount}/{s.total}
+              {" • "}missing {s.missingCount}
+              {" • "}requested {s.requestedCount}
+            </div>
+            <div style={{
+              width: "min(560px, 90vw)",
+              border: "1px solid #444",
+              borderRadius: 8,
+              overflow: "hidden",
+              height: 12
+            }}>
+              <div style={{
+                width: `${s.pct}%`,
+                height: "100%",
+                background: "#00a35a"
+              }} />
+            </div>
+          </div>
+        )}
 
         {loading && <p>Loading…</p>}
         {err && <p style={{color:"#e23b3b"}}>Error: {err}</p>}
